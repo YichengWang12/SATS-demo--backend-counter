@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="orderMapper">
+    <!--balance-->
+    <select id="queryBalance" resultType="long">
+        select t.balance
+        from t_user t
+        where t.uid = #{Uid,jdbcType=BIGINT}
+    </select>
+
+    <update id="updateBalance" parameterType="Map">
+        update t_user
+        set balance = balance + #{Balance,jdbcType=BIGINT}
+        where uid = #{UId,jdbcType=BIGINT}
+    </update>
+    <!--position-->
+    <select id="queryPosi" resultType="com.ethan.counter.bean.res.PosiInfo">
+        select t.id,
+        t.uid,
+        t.code,
+        s.name,
+        t.cost,
+        t.count
+        from t_posi_us t,
+        t_stock_us s
+        where t.uid = #{Uid}
+        <if test="Code != null and Code != ''">
+            and t.code = #{Code}
+        </if>
+        and t.code = s.code
+    </select>
+
+    <update id="updatePosi" parameterType="Map">
+        update t_posi_us
+        set count = #{Count,jdbcType=BIGINT},
+            cost  = #{Cost,jdbcType=BIGINT},
+            where
+                uid = #{Uid,jdbcType=BIGINT},
+            and code = #{Code}
+    </update>
+
+    <insert id="insertPosi" parameterType="Map">
+        insert into t_posi_us(uid, code, cost, count)
+        values (#{Uid},
+                #{Code},
+                #{Cost},
+                #{Count})
+    </insert>
+
+
+    <!--order-->
+    <select id="queryOrder" resultType="com.ethan.counter.bean.res.OrderInfo">
+        select
+        t.id,
+        t.uid,
+        t.code,
+        s.name,
+        t.direction,
+        t.type,
+        t.price,
+        t.count,
+        t.status,
+        t.date,
+        t.time
+        from t_order_us t,
+        t_stock_us s
+        where
+        t.uid = #{Uid}
+        and t.code = s.code
+        and
+        <choose>
+            <when test="date != null and date != ''">
+                t.date = #{date}
+            </when>
+            <otherwise>
+                1=1
+            </otherwise>
+        </choose>
+        and
+        <choose>
+            <when test="code != null and code != ''">
+                t.code LIKE #{code}
+            </when>
+            <otherwise>1=1</otherwise>
+        </choose>
+    </select>
+    <!--trade-->
+    <select id="queryTrade" resultType="com.ethan.counter.bean.res.TradeInfo">
+        select t.id,
+        t.uid,
+        t.code,
+        s.name,
+        t.direction,
+        t.price,
+        t.tcount,
+        t.date,
+        t.time
+        from t_trade_us t,
+        t_stock_us s
+        where t.uid = #{Uid}
+        and t.code = s.code
+        and
+        <choose>
+            <when test="date != null and date != ''">
+                t.date = #{date}
+            </when>
+            <otherwise>
+                1=1
+            </otherwise>
+        </choose>
+        and
+        <choose>
+            <when test="code != null and code != ''">
+                t.code LIKE #{code}
+            </when>
+            <otherwise>1=1</otherwise>
+        </choose>
+    </select>
+
+    <insert id="saveOrder" parameterType="Map">
+        INSERT INTO t_order_us(uid,
+        code,
+        direction,
+        type,
+        price,
+        count,
+        status,
+        date,
+        time)
+        VALUES (#{Uid},
+        #{Code},
+        #{Direction},
+        #{Type},
+        #{Price},
+        #{Count},
+        #{Status},
+        #{Date},
+        #{Time})
+        <selectKey keyColumn="id" resultType="int"
+                   keyProperty="ID" order="AFTER">
+            SELECT last_insert_rowid()
+        </selectKey>
+    </insert>
+
+    <insert id="saveTrade" parameterType="Map">
+        INSERT INTO t_trade_us(id,
+                               uid,
+                               code,
+                               direction,
+                               price,
+                               tcount,
+                               oid,
+                               date,
+                               time)
+        VALUES (#{Id},
+                #{UId},
+                #{Code},
+                #{Direction},
+                #{Price},
+                #{TCount},
+                #{Date},
+                #{Time})
+    </insert>
+
+    <update id="updateOrder" parameterType="Map">
+        update t_order_us
+        set status = #{Status}
+        where id = #{Id}
+    </update>
+</mapper>

@@ -1,0 +1,48 @@
+server:
+  port: 8090
+
+spring:
+  datasource:
+    driver-class-name: org.sqlite.JDBC
+    url: jdbc:sqlite:/Users/wangyicheng/test.db
+  data:
+    redis:
+      port: 6379
+      host: 127.0.0.1
+      timeout: 6000ms
+
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+mybatis-plus:
+  configuration:
+    jdbc-type-for-null: 'null'
+
+cacheexpire:
+  captcha: 100
+  account: 3600
+  order: 36000
+
+counter:
+  id: 1000
+  #server room id
+  dataCenterId: 0
+  #cabinet id
+  workerId: 0
+
+  #TCP direct connect gateway info
+  sendIp: 127.0.0.1
+  sendPort: 8091
+  gatewayId: 1001
+
+  #subscribe eventbus data 订阅总线数据
+  subscribeIp: 127.0.0.1
+  subscribePort: 1883
+
+  #委托终端通信
+  pubport: 8501
+
+
+  #code and decode utility
+  checksum: thirdpart.checksum.ByteCheckSum
+  bytecodec: thirdpart.codec.IByteCodecImpl
+  msgcodec: thirdpart.codec.IMsgCodecImpl
